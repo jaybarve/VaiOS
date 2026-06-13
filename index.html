@@ -614,21 +614,86 @@ function openApp(app){
       appContent.style.display = 'block';
 
       if(app.id === 'youtube') {
-          // Changed to an unrestricted stock nature video embed URL to guarantee it plays
-          appContent.innerHTML = '<iframe src="https://www.youtube.com/embed/aqz-KE-bpKQ?autoplay=1&mute=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="width:100%;height:100%;border:none;border-radius:16px;background:#000;"></iframe>';
-      } else if (app.id === 'messages') {
-          appContent.innerHTML = `
-              <div style="display:flex;flex-direction:column;height:100%;width:100%;text-align:left;background:var(--bg-card);border-radius:16px;overflow:hidden;box-shadow:inset 0 0 0 1px var(--border);">
-                  <div style="padding:15px;background:var(--accent);color:white;font-weight:bold;">Auto.confirmai</div>
-                  <div style="flex:1;padding:15px;display:flex;flex-direction:column;gap:12px;background:var(--bg-screen);overflow-y:auto;">
-                      <div style="background:#e5e5ea;color:black;padding:12px 16px;border-radius:18px 18px 18px 4px;align-self:flex-start;max-width:85%;font-size:0.9rem;box-shadow:0 2px 5px rgba(0,0,0,0.05);">COD Order #4092 confirmed. Scheduled for delivery to Solapur.</div>
-                      <div style="background:var(--accent);color:white;padding:12px 16px;border-radius:18px 18px 4px 18px;align-self:flex-end;max-width:85%;font-size:0.9rem;box-shadow:0 2px 5px rgba(0,0,0,0.05);">Got it. Thanks!</div>
-                  </div>
-                  <div style="padding:12px;background:var(--bg-card);border-top:1px solid var(--border);">
-                      <input type="text" placeholder="iMessage..." style="width:100%;padding:12px 16px;border-radius:20px;border:1px solid var(--border);outline:none;font-size:0.9rem;background:var(--bg-screen);">
-                  </div>
-              </div>
-          `;
+
+    defaultView.style.display = 'none';
+    appContent.style.display = 'block';
+
+    appContent.innerHTML = `
+    <div style="
+        height:100%;
+        background:#0f0f0f;
+        color:white;
+        display:flex;
+        flex-direction:column;
+    ">
+
+        <div style="
+            background:#ff0000;
+            padding:15px;
+            font-size:22px;
+            font-weight:bold;
+            text-align:center;
+        ">
+            YouTube
+        </div>
+
+        <div style="
+            padding:15px;
+            overflow-y:auto;
+            flex:1;
+        ">
+
+            <div style="
+                background:#181818;
+                border-radius:16px;
+                overflow:hidden;
+                margin-bottom:20px;
+            ">
+
+                <img
+                    src="https://img.youtube.com/vi/Y2mYQxYjXxA/maxresdefault.jpg"
+                    style="width:100%;display:block;"
+                    onerror="this.src='https://img.youtube.com/vi/Y2mYQxYjXxA/hqdefault.jpg';"
+                >
+
+                <div style="padding:15px;">
+                    <h3 style="margin:0;">
+                        Your YouTube Video
+                    </h3>
+
+                    <p style="
+                        color:#aaaaaa;
+                        margin-top:8px;
+                    ">
+                        Open directly in YouTube
+                    </p>
+
+                    <button
+                        onclick="window.open('https://www.youtube.com/watch?v=Y2mYQxYjXxA','_blank')"
+                        style="
+                            background:#ff0000;
+                            color:white;
+                            border:none;
+                            padding:12px 20px;
+                            border-radius:10px;
+                            font-size:16px;
+                            font-weight:bold;
+                            cursor:pointer;
+                            margin-top:10px;
+                        "
+                    >
+                        ▶ Watch Video
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    `;
+}
       } else if (app.id === 'phone') {
           appContent.innerHTML = `
               <div style="display:flex;flex-direction:column;align-items:center;height:100%;justify-content:center;background:var(--bg-card);border-radius:16px;padding:20px;box-shadow:inset 0 0 0 1px var(--border);">
