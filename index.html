@@ -181,7 +181,8 @@
     padding:64px 14px 90px;
     overflow-y:auto;
     -webkit-overflow-scrolling:touch;
-    background: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=400&q=80') center/cover no-repeat;
+    /* Custom wallpaper path modification loaded successfully */
+    background: url('image.jpg') center/cover no-repeat;
   }
   #home::-webkit-scrollbar{display:none;}
   .home-topbar{
@@ -287,29 +288,34 @@
   }
   #home-indicator-area.light #home-indicator {background:rgba(255,255,255,.5);}
 
-  /* APP WINDOW */
+  /* APP WINDOW WITH SMOOTH FLUID OPENING/CLOSING PHYSICS */
   .app-window{
     position:absolute;inset:0;
     background:var(--bg-screen);
     z-index:300;
-    transform:scale(.25) translateY(40%);
+    transform:scale(0.05) translate(0, 0);
     opacity:0;
-    transform-origin:var(--origin-x,50%) var(--origin-y,90%);
+    transform-origin:var(--origin-x, 50%) var(--origin-y, 50%);
     pointer-events:none;
-    transition:transform .38s cubic-bezier(.2,.85,.32,1), opacity .28s ease, border-radius .38s ease;
+    /* Implements high performance hardware-accelerated cubic-bezier curves for transitions */
+    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1), 
+                border-radius 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
     display:flex;flex-direction:column;
     border-radius:40px;
+    will-change: transform, opacity;
   }
   .app-window.open{
-    transform:scale(1) translateY(0);
+    transform:scale(1) translate(0, 0) !important;
     opacity:1;
     border-radius:0px;
     pointer-events:auto;
   }
   .app-window.closing{
-    transform:scale(.25) translateY(40%);
+    transform:scale(0.05) translate(0, 0) !important;
     opacity:0;
     border-radius:40px;
+    pointer-events:none;
   }
   .app-window .win-top{
     padding:60px 20px 14px;
@@ -539,6 +545,8 @@ appIcons.forEach(el=>{
     const name = el.querySelector('.name').textContent;
     const rect = el.getBoundingClientRect();
     const phoneRect = document.getElementById('screen-clip').getBoundingClientRect();
+    
+    // Calculates coordinate origins dynamically so scale grows from custom clicked positions
     const originX = ((rect.left + rect.width/2 - phoneRect.left) / phoneRect.width) * 100;
     const originY = ((rect.top + rect.height/2 - phoneRect.top) / phoneRect.height) * 100;
     openApp({id, icon, label:name, type, originX, originY});
@@ -600,6 +608,10 @@ let sandboxEnabled = true;
 let cloudSyncEnabled = true;
 
 function openApp(app){
+  // Set explicit dynamic transition tracking origin coordinates
+  win.style.setProperty('--origin-x', (app.originX ?? 50) + '%');
+  win.style.setProperty('--origin-y', (app.originY ?? 90) + '%');
+
   winIcon.textContent=app.icon;
   winTitle.textContent=app.label;
   winBadge.textContent = sandboxEnabled
@@ -614,7 +626,6 @@ function openApp(app){
       appContent.style.display = 'block';
 
       if(app.id === 'youtube') {
-        // Switch container view padding to fit an edge-to-edge dark media player interface
         winBodyContainer.style.padding = "0";
         appContent.innerHTML = `
         <div style="height:100%; background:#0f0f0f; color:white; display:flex; flex-direction:column;">
@@ -623,18 +634,20 @@ function openApp(app){
             </div>
             <div style="flex:1; display:flex; flex-direction:column; background:#000;">
                 <div style="position:relative; width:100%; aspect-ratio:16/9; background:#000;">
-                    <iframe 
-                        style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" 
-                        src="https://www.youtube.com/embed/Y2mYQxYjXxA?autoplay=1&mute=1&modestbranding=1&rel=0&playsinline=1" 
-                        allow="autoplay; encrypted-media; picture-in-picture" 
-                        allowfullscreen>
-                    </iframe>
+                    <video 
+                        style="width:100%; height:100%; object-fit:contain; background:#000;" 
+                        src="video.mp4" 
+                        autoplay 
+                        loop 
+                        muted 
+                        playsinline>
+                    </video>
                 </div>
                 <div style="padding:20px; text-align:left; flex:1; background:#0f0f0f;">
-                    <h3 style="margin:0 0 6px 0; font-size:1.1rem; color:#fff; font-weight:600; line-height:1.4;">Sitaare Song Status | Arijit Singh | Black Screen Lyrics</h3>
-                    <p style="color:#aaa; margin:0; font-size:0.85rem;">144K views • 2025</p>
+                    <h3 style="margin:0 0 6px 0; font-size:1.1rem; color:#fff; font-weight:600; line-height:1.4;">Sitaare Song Status | Arijit Singh | Local Content</h3>
+                    <p style="color:#aaa; margin:0; font-size:0.85rem;">Local Media Stream • 2026</p>
                     <div style="margin-top:20px; display:flex; gap:10px;">
-                        <span style="background:#272727; padding:8px 16px; border-radius:20px; font-size:0.8rem; font-weight:600; color:#fff;">👍 3.0k</span>
+                        <span style="background:#272727; padding:8px 16px; border-radius:20px; font-size:0.8rem; font-weight:600; color:#fff;">👍 3.1k</span>
                         <span style="background:#272727; padding:8px 16px; border-radius:20px; font-size:0.8rem; font-weight:600; color:#fff;">↩ Share</span>
                     </div>
                 </div>
@@ -697,8 +710,6 @@ function openApp(app){
       },950);
   }
 
-  win.style.setProperty('--origin-x', (app.originX ?? 50) + '%');
-  win.style.setProperty('--origin-y', (app.originY ?? 90) + '%');
   win.classList.remove('closing');
   void win.offsetWidth;
   win.classList.add('open');
@@ -709,7 +720,6 @@ function closeApp(){
   win.classList.remove('open');
   showUndo(`Closed "${winTitle.textContent}"`);
   
-  // Wipe container completely to instantly terminate video sound playback on close 
   const appContent = document.getElementById('app-content');
   setTimeout(() => { appContent.innerHTML = ''; }, 380);
 }
