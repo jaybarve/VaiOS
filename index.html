@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VaiOS</title>
+<title>VaiOS Pro</title>
 <style>
   :root{
     --bg-screen:#f4f4f7;
@@ -54,6 +54,17 @@
     overflow:hidden;
     background:var(--bg-screen);
   }
+  
+  /* HARDWARE BRIGHTNESS OVERLAY LAYER */
+  #brightness-overlay {
+    position:absolute;inset:0;
+    background:rgba(0,0,0,0);
+    z-index:999;
+    pointer-events:none;
+    mix-blend-mode:multiply;
+    transition:background 0.2s ease;
+  }
+
   #island{
     position:absolute;top:12px;left:50%;
     transform:translateX(-50%);
@@ -63,7 +74,7 @@
     z-index:500;
     display:flex;align-items:center;justify-content:flex-end;
     padding-right:14px;
-    transition:width .4s cubic-bezier(.2,.8,.2,1), height .4s cubic-bezier(.2,.8,.2,1);
+    transition:width .4s cubic-bezier(.175, .885, .32, 1.275), height .4s cubic-bezier(.175, .885, .32, 1.275);
   }
   #island .cam-dot{
     width:10px;height:10px;border-radius:50%;
@@ -99,14 +110,15 @@
   .boot-name{margin-top:22px;color:#fff;font-weight:600;font-size:1.05rem;letter-spacing:.04em;}
   .boot-sub{margin-top:6px;color:#6b6b70;font-size:.78rem;}
 
-  /* LOCK SCREEN */
+  /* LOCK SCREEN WITH CUSTOM WALLPAPER PATH */
   #lock{
     position:absolute;inset:0;
     z-index:500;
     background:
       radial-gradient(circle at 30% 20%, rgba(124,131,253,.35), transparent 45%),
       radial-gradient(circle at 75% 75%, rgba(94,106,210,.3), transparent 50%),
-      linear-gradient(160deg,#23243a 0%, #14141f 60%, #0c0c14 100%);
+      linear-gradient(160deg, rgba(35, 36, 58, 0.45) 0%, rgba(20, 20, 31, 0.6) 60%, rgba(12, 12, 20, 0.75) 100%),
+      url('image2.jpg') center/cover no-repeat;
     display:flex;flex-direction:column;align-items:center;
     color:#fff;
     transition:transform .5s cubic-bezier(.22,.85,.32,1), opacity .4s ease;
@@ -119,6 +131,7 @@
   #lock .lock-widgets{
     margin-top:34px;width:88%;
     display:flex;flex-direction:column;gap:10px;
+    transition: opacity 0.3s ease;
   }
   .lock-card{
     background:rgba(255,255,255,.08);
@@ -157,6 +170,7 @@
     backdrop-filter:blur(10px);
     display:flex;align-items:center;justify-content:center;font-size:1.2rem;
     color:#fff;
+    cursor:pointer;
   }
   #lock .flashlight{left:30px;}
   #lock .camera-shortcut{right:30px;}
@@ -164,15 +178,15 @@
   /* STATUS BAR */
   #statusbar{
     position:absolute;top:0;left:0;right:0;
-    height:54px;z-index:50;
+    height:54px;z-index:55;
     display:flex;align-items:center;justify-content:space-between;
     padding:0 26px;
     font-size:.95rem;font-weight:600;color:var(--text);
     pointer-events:none;
     transition:color .3s ease;
   }
-  #statusbar .right{display:flex;align-items:center;gap:5px;}
-  #statusbar svg{display:block;}
+  #statusbar .right{display:flex;align-items:center;gap:6px;}
+  #statusbar svg{display:block; transition: opacity 0.2s ease;}
   #statusbar.light{color:#fff;}
 
   /* HOME SCREEN */
@@ -181,22 +195,11 @@
     padding:64px 14px 90px;
     overflow-y:auto;
     -webkit-overflow-scrolling:touch;
-    background: url('image.jpg') center/cover no-repeat;
+    background: url('image.jpg') center/cover no-repeat, url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=400&q=80') center/cover no-repeat;
+    transition: filter 0.3s ease;
   }
   #home::-webkit-scrollbar{display:none;}
-  .home-topbar{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:0 6px 14px;
-  }
-  .home-topbar h1{margin:0;font-size:1.6rem;font-weight:800;letter-spacing:-.5px;}
-  .menu-btn{
-    width:40px;height:40px;border-radius:50%;
-    background:var(--bg-card);
-    border:1px solid var(--border);
-    display:flex;align-items:center;justify-content:center;
-    box-shadow:0 2px 10px rgba(0,0,0,.04);
-    cursor:pointer;
-  }
+  
   #grid{
     display:grid;
     grid-template-columns:1fr 1fr;
@@ -266,7 +269,9 @@
     font-size:1.2rem;color:var(--text);
     z-index:40;
     cursor:pointer;
+    transition: transform 0.2s ease;
   }
+  #search-fab:active, #voice-fab:active { transform:scale(0.9); }
   #search-fab { left:24px; }
   #voice-fab { right:24px; }
 
@@ -287,30 +292,30 @@
   }
   #home-indicator-area.light #home-indicator {background:rgba(255,255,255,.5);}
 
-  /* APP WINDOW WITH SMOOTH FLUID OPENING/CLOSING PHYSICS */
+  /* APP WINDOW WITH ULTRA-SMOOTH SPRING PHYSICS */
   .app-window{
     position:absolute;inset:0;
     background:var(--bg-screen);
     z-index:300;
-    transform:scale(0.05) translate(0, 0);
+    transform:scale(0.05);
     opacity:0;
     transform-origin:var(--origin-x, 50%) var(--origin-y, 50%);
     pointer-events:none;
-    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), 
-                opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1), 
-                border-radius 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: transform 0.46s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                opacity 0.26s cubic-bezier(0.22, 1, 0.36, 1), 
+                border-radius 0.46s cubic-bezier(0.34, 1.56, 0.64, 1);
     display:flex;flex-direction:column;
     border-radius:40px;
     will-change: transform, opacity;
   }
   .app-window.open{
-    transform:scale(1) translate(0, 0) !important;
+    transform:scale(1) !important;
     opacity:1;
     border-radius:0px;
     pointer-events:auto;
   }
   .app-window.closing{
-    transform:scale(0.05) translate(0, 0) !important;
+    transform:scale(0.05) !important;
     opacity:0;
     border-radius:40px;
     pointer-events:none;
@@ -356,12 +361,12 @@
   }
   #control-center{
     position:absolute;top:0;right:0;left:0;
-    background:rgba(255,255,255,.7);
-    backdrop-filter:blur(24px);
+    background:rgba(255,255,255,.78);
+    backdrop-filter:blur(30px);
     border-bottom-left-radius:32px;border-bottom-right-radius:32px;
     padding:60px 20px 24px;
     transform:translateY(-110%);
-    transition:transform .35s cubic-bezier(.22,.85,.32,1);
+    transition:transform .4s cubic-bezier(0.25, 1, 0.5, 1);
     z-index:400;
     box-shadow:0 20px 50px rgba(0,0,0,.15);
   }
@@ -374,6 +379,7 @@
     cursor:pointer;
   }
   .cc-mode-switch button.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  
   .cc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
   .cc-tile{
     background:var(--bg-card);border-radius:16px;padding:12px;
@@ -391,6 +397,40 @@
     transition:left .2s ease;
   }
   .cc-tile .toggle.on::after{left:18px;}
+
+  /* SLIDER SYSTEM */
+  .cc-hardware-sliders {
+    margin-top:16px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+  .cc-slider-card {
+    background:var(--bg-card);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:12px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    font-size:0.75rem;
+    font-weight:700;
+  }
+  .slider-container {
+    position:relative;
+    width:100%;
+    height:8px;
+    background:var(--border);
+    border-radius:4px;
+    cursor:pointer;
+  }
+  .slider-fill {
+    height:100%;
+    background:var(--accent);
+    border-radius:4px;
+    width:70%;
+    transition: width 0.1s ease;
+  }
 
   /* UNDO TOAST */
   #undo-toast{
@@ -416,24 +456,25 @@
 
 <div id="phone">
   <div id="screen-clip">
+    <div id="brightness-overlay"></div>
 
     <div id="boot">
       <div class="boot-logo">V</div>
-      <div class="boot-name">VaiOS</div>
+      <div class="boot-name">VaiOS Pro</div>
       <div class="boot-sub" id="boot-text">Starting system…</div>
     </div>
 
     <div id="lock">
       <div class="lock-time" id="lock-time">9:41</div>
       <div class="lock-date" id="lock-date">Friday, June 12</div>
-      <div class="lock-widgets">
+      <div class="lock-widgets" id="lock-widgets-container">
         <div class="lock-card">
           <div class="lc-icon">☁️</div>
-          <div class="lc-text"><strong>Cloud Sync</strong><span>All apps up to date</span></div>
+          <div class="lc-text"><strong>Cloud Sync</strong><span>All sandbox cores secure</span></div>
         </div>
         <div class="lock-card">
           <div class="lc-icon">🔔</div>
-          <div class="lc-text"><strong>3 notifications</strong><span>Messages, Mail, Calendar</span></div>
+          <div class="lc-text"><strong>Live Notifications</strong><span>WhatsApp sandbox active</span></div>
         </div>
       </div>
       <div class="lock-hint">
@@ -459,16 +500,31 @@
     <div id="control-center">
       <h2>Control Center</h2>
       <div class="cc-mode-switch">
-        <button id="btn-simple" class="active">Simple</button>
+        <button id="btn-simple" class="active">Simple UI</button>
         <button id="btn-performance">Performance</button>
       </div>
       <div class="cc-grid">
         <div class="cc-tile">Wi-Fi <div class="toggle on" data-toggle data-key="wifi"></div></div>
-        <div class="cc-tile">Voice <div class="toggle on" data-toggle data-key="voice"></div></div>
+        <div class="cc-tile">Voice Assist <div class="toggle on" data-toggle data-key="voice"></div></div>
         <div class="cc-tile">Cloud Sync <div class="toggle on" data-toggle data-key="cloud"></div></div>
-        <div class="cc-tile">Sandbox <div class="toggle on" data-toggle data-key="sandbox"></div></div>
+        <div class="cc-tile">Sandbox Runtime <div class="toggle on" data-toggle data-key="sandbox"></div></div>
         <div class="cc-tile">Low Power <div class="toggle" data-toggle data-key="lowpower"></div></div>
-        <div class="cc-tile">Focus <div class="toggle" data-toggle data-key="focus"></div></div>
+        <div class="cc-tile">Focus Mode <div class="toggle" data-toggle data-key="focus"></div></div>
+      </div>
+      
+      <div class="cc-hardware-sliders">
+        <div class="cc-slider-card">
+          <span>🔆 Brightness</span>
+          <div class="slider-container" id="slider-bright">
+            <div class="slider-fill" id="fill-bright" style="width: 100%;"></div>
+          </div>
+        </div>
+        <div class="cc-slider-card">
+          <span>🔊 Volume</span>
+          <div class="slider-container" id="slider-vol">
+            <div class="slider-fill" id="fill-vol" style="width: 75%;"></div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -550,7 +606,7 @@ appIcons.forEach(el=>{
   });
 });
 
-const bootMsgs = ['Starting system…','Mounting local storage…','Initializing sandbox runtime…','Connecting to cloud apps…','Almost ready…'];
+const bootMsgs = ['Starting system…','Mounting secure sandboxes…','Initializing runtime engine…','Optimizing layout frames…','Almost ready…'];
 let bi=0;
 const bootText=document.getElementById('boot-text');
 const bootTimer=setInterval(()=>{
@@ -560,7 +616,7 @@ const bootTimer=setInterval(()=>{
     clearInterval(bootTimer);
     document.getElementById('boot').classList.add('hide');
   }
-},480);
+},400);
 
 function updateClock(){
   const d=new Date();
@@ -603,6 +659,7 @@ const winBodyContainer = document.getElementById('window-body-container');
 
 let sandboxEnabled = true;
 let cloudSyncEnabled = true;
+let systemVolume = 0.75;
 
 function openApp(app){
   win.style.setProperty('--origin-x', (app.originX ?? 50) + '%');
@@ -617,7 +674,7 @@ function openApp(app){
   const defaultView = document.getElementById('default-sandbox-view');
   const appContent = document.getElementById('app-content');
 
-  if(['youtube', 'phone', 'messages', 'photos'].includes(app.id)) {
+  if(['youtube', 'phone', 'messages', 'photos', 'whatsapp'].includes(app.id)) {
       defaultView.style.display = 'none';
       appContent.style.display = 'block';
 
@@ -651,15 +708,15 @@ function openApp(app){
         </div>
         `;
         
-        // Safety Fallback: Force play just in case the browser stalls unmuted playback profiles
         const vPlayer = document.getElementById('yt-video-player');
         if (vPlayer) {
+            vPlayer.volume = systemVolume;
             vPlayer.play().catch(() => {
-                // If browser completely blocks unmuted autoplay, it launches muted and waits for any tap on the window to unmute
                 vPlayer.muted = true;
                 vPlayer.play();
                 const unmuteOnTap = () => {
                     vPlayer.muted = false;
+                    vPlayer.volume = systemVolume;
                     win.removeEventListener('click', unmuteOnTap);
                 };
                 win.addEventListener('click', unmuteOnTap);
@@ -689,8 +746,6 @@ function openApp(app){
                   <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=400&q=80" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;">
                   <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=400&q=80" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;">
                   <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=400&q=80" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;">
-                  <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=400&q=80" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;">
-                  <img src="https://images.unsplash.com/photo-1614064641938-3bbee52942c7?auto=format&fit=crop&w=400&q=80" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;">
               </div>
           `;
       } else if (app.id === 'messages') {
@@ -701,6 +756,51 @@ function openApp(app){
                   <div style="align-self:flex-end;background:var(--accent);color:white;padding:10px 14px;border-radius:16px;font-size:0.85rem;max-width:80%;text-align:left;">Yes, completely isolated and safe container!</div>
               </div>
           `;
+      } else if (app.id === 'whatsapp') {
+          winBodyContainer.style.padding = "0";
+          appContent.innerHTML = `
+              <div style="display:flex; flex-direction:column; height:100%; background:#ece5dd;">
+                  <div style="background:#075e54; color:white; padding:15px; font-weight:bold; font-size:1.1rem; text-align:left;">
+                      💚 WhatsApp Core Container
+                  </div>
+                  <div id="wa-chat-area" style="flex:1; padding:15px; display:flex; flex-direction:column; gap:10px; overflow-y:auto;">
+                      <div style="align-self:flex-start; background:white; color:black; padding:8px 12px; border-radius:10px; font-size:0.85rem; max-width:75%; text-align:left; box-shadow:0 1px 2px rgba(0,0,0,0.15);">Welcome to secure chat profiles.</div>
+                  </div>
+                  <div style="background:#f0f0f0; padding:10px; display:flex; gap:8px; align-items:center; border-top:1px solid #ddd;">
+                      <input id="wa-msg-input" type="text" placeholder="Type secure message..." style="flex:1; padding:10px; border-radius:20px; border:1px solid #ccc; font-size:0.85rem; outline:none;">
+                      <button id="wa-send-btn" style="background:#128c7e; color:white; border:none; width:36px; height:36px; border-radius:50%; cursor:pointer; font-weight:bold; display:flex; align-items:center; justify-content:center;">➔</button>
+                  </div>
+              </div>
+          `;
+          
+          setTimeout(() => {
+              const input = document.getElementById('wa-msg-input');
+              const button = document.getElementById('wa-send-btn');
+              const chatArea = document.getElementById('wa-chat-area');
+              
+              const sendMsg = () => {
+                  if(!input.value.trim()) return;
+                  const userDiv = document.createElement('div');
+                  userDiv.style = "align-self:flex-end; background:#dcf8c6; color:black; padding:8px 12px; border-radius:10px; font-size:0.85rem; max-width:75%; text-align:left; box-shadow:0 1px 2px rgba(0,0,0,0.15);";
+                  userDiv.textContent = input.value;
+                  chatArea.appendChild(userDiv);
+                  
+                  const typedText = input.value;
+                  input.value = "";
+                  chatArea.scrollTop = chatArea.scrollHeight;
+                  
+                  setTimeout(() => {
+                      const botDiv = document.createElement('div');
+                      botDiv.style = "align-self:flex-start; background:white; color:black; padding:8px 12px; border-radius:10px; font-size:0.85rem; max-width:75%; text-align:left; box-shadow:0 1px 2px rgba(0,0,0,0.15);";
+                      botDiv.textContent = `[Sandbox Echo]: Received execution command for "${typedText}" successfully.`;
+                      chatArea.appendChild(botDiv);
+                      chatArea.scrollTop = chatArea.scrollHeight;
+                  }, 800);
+              };
+              
+              button.addEventListener('click', sendMsg);
+              input.addEventListener('keypress', e => { if(e.key === 'Enter') sendMsg(); });
+          }, 50);
       }
   } else {
       winBodyContainer.style.padding = "0 20px 20px";
@@ -809,9 +909,37 @@ document.getElementById('home').addEventListener('click',()=>{
   if(ccOpen){ ccOpen=false; cc.classList.remove('open'); }
 });
 
+const sliderBright = document.getElementById('slider-bright');
+const fillBright = document.getElementById('fill-bright');
+const bOverlay = document.getElementById('brightness-overlay');
+
+sliderBright.addEventListener('click', e => {
+  const rect = sliderBright.getBoundingClientRect();
+  const pct = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+  fillBright.style.width = pct + '%';
+  bOverlay.style.background = `rgba(0, 0, 0, ${0.65 - (pct / 100) * 0.65})`;
+});
+
+const sliderVol = document.getElementById('slider-vol');
+const fillVol = document.getElementById('fill-vol');
+
+sliderVol.addEventListener('click', e => {
+  const rect = sliderVol.getBoundingClientRect();
+  const pct = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+  fillVol.style.width = pct + '%';
+  systemVolume = pct / 100;
+  
+  const activeVideo = document.getElementById('yt-video-player');
+  if(activeVideo) {
+      activeVideo.volume = systemVolume;
+  }
+});
+
 const wifiIcon = document.getElementById('icon-wifi');
 const waBadge = document.getElementById('wa-badge');
 const screenClip = document.getElementById('screen-clip');
+const lockWidgetsContainer = document.getElementById('lock-widgets-container');
+
 document.querySelectorAll('[data-toggle]').forEach(t=>{
   t.addEventListener('click',(e)=>{
     e.stopPropagation();
@@ -831,10 +959,11 @@ document.querySelectorAll('[data-toggle]').forEach(t=>{
         sandboxEnabled = isOn;
         break;
       case 'lowpower':
-        screenClip.style.filter = isOn ? 'grayscale(.35) brightness(.9)' : 'none';
+        screenClip.style.filter = isOn ? 'grayscale(.4) brightness(.9)' : 'none';
         break;
       case 'focus':
         waBadge.style.display = isOn ? 'none' : 'flex';
+        lockWidgetsContainer.style.opacity = isOn ? '0.2' : '1';
         break;
     }
     showUndo(`${label} ${isOn?'enabled':'disabled'}`);
