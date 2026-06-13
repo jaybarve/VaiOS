@@ -505,7 +505,7 @@
           <button id="win-close">✕</button>
         </div>
       </div>
-      <div class="win-body">
+      <div class="win-body" id="window-body-container">
         
         <div id="default-sandbox-view">
           <div class="cloud-icon">☁️</div>
@@ -594,6 +594,7 @@ const winBadge=document.getElementById('win-badge');
 const winStatus=document.getElementById('win-status');
 const winProgress=document.getElementById('win-progress');
 const winClose=document.getElementById('win-close');
+const winBodyContainer = document.getElementById('window-body-container');
 
 let sandboxEnabled = true;
 let cloudSyncEnabled = true;
@@ -613,26 +614,35 @@ function openApp(app){
       appContent.style.display = 'block';
 
       if(app.id === 'youtube') {
+        // Switch container view padding to fit an edge-to-edge dark media player interface
+        winBodyContainer.style.padding = "0";
         appContent.innerHTML = `
         <div style="height:100%; background:#0f0f0f; color:white; display:flex; flex-direction:column;">
-            <div style="background:#ff0000; padding:15px; font-size:22px; font-weight:bold; text-align:center;">
-                YouTube
+            <div style="background:#0f0f0f; padding:15px; font-size:20px; font-weight:bold; text-align:left; border-bottom:1px solid #272727; display:flex; align-items:center; gap:8px;">
+                <span style="color:#ff0000;">▶</span> YouTube Dark
             </div>
-            <div style="padding:15px; overflow-y:auto; flex:1;">
-                <div style="background:#181818; border-radius:16px; overflow:hidden; margin-bottom:20px;">
-                    <img src="https://i.ytimg.com/vi/Y2mYQxYjXxA/maxresdefault.jpg" style="width:100%; display:block;" onerror="this.src='https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=400&q=80';">
-                    <div style="padding:15px; text-align:left;">
-                        <h3 style="margin:0; font-size:1.1rem; color:#fff;">Sitaare Song Status | Arijit Singh</h3>
-                        <p style="color:#aaaaaa; margin-top:6px; font-size:0.85rem;">Love Song - Black Screen Lyrics Status</p>
-                        <button onclick="window.open('https://youtu.be/Y2mYQxYjXxA?si=zQklyQT15BiwODwG','_blank')" style="background:#ff0000; color:white; border:none; padding:12px 20px; border-radius:10px; font-size:15px; font-weight:bold; cursor:pointer; margin-top:12px; width:100%;">
-                            ▶ Play Video
-                        </button>
+            <div style="flex:1; display:flex; flex-direction:column; background:#000;">
+                <div style="position:relative; width:100%; aspect-ratio:16/9; background:#000;">
+                    <iframe 
+                        style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" 
+                        src="https://www.youtube.com/embed/Y2mYQxYjXxA?autoplay=1&mute=1&modestbranding=1&rel=0&playsinline=1" 
+                        allow="autoplay; encrypted-media; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+                <div style="padding:20px; text-align:left; flex:1; background:#0f0f0f;">
+                    <h3 style="margin:0 0 6px 0; font-size:1.1rem; color:#fff; font-weight:600; line-height:1.4;">Sitaare Song Status | Arijit Singh | Black Screen Lyrics</h3>
+                    <p style="color:#aaa; margin:0; font-size:0.85rem;">144K views • 2025</p>
+                    <div style="margin-top:20px; display:flex; gap:10px;">
+                        <span style="background:#272727; padding:8px 16px; border-radius:20px; font-size:0.8rem; font-weight:600; color:#fff;">👍 3.0k</span>
+                        <span style="background:#272727; padding:8px 16px; border-radius:20px; font-size:0.8rem; font-weight:600; color:#fff;">↩ Share</span>
                     </div>
                 </div>
             </div>
         </div>
         `;
       } else if (app.id === 'phone') {
+          winBodyContainer.style.padding = "0 20px 20px";
           appContent.innerHTML = `
               <div style="display:flex;flex-direction:column;align-items:center;height:100%;justify-content:center;background:var(--bg-card);border-radius:16px;padding:20px;box-shadow:inset 0 0 0 1px var(--border);">
                   <div style="width:80px;height:80px;background:var(--accent-soft);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin-bottom:15px;">👨‍💻</div>
@@ -647,6 +657,7 @@ function openApp(app){
               </div>
           `;
       } else if (app.id === 'photos') {
+          winBodyContainer.style.padding = "0 20px 20px";
           appContent.innerHTML = `
               <div style="display:grid;grid-template-columns:repeat(2, 1fr);gap:10px;overflow-y:auto;height:100%;border-radius:16px;padding-right:4px;">
                   <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=400&q=80" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;">
@@ -658,6 +669,7 @@ function openApp(app){
               </div>
           `;
       } else if (app.id === 'messages') {
+          winBodyContainer.style.padding = "0 20px 20px";
           appContent.innerHTML = `
               <div style="display:flex;flex-direction:column;gap:12px;padding:15px;height:100%;overflow-y:auto;background:var(--bg-card);border-radius:16px;">
                   <div style="align-self:flex-start;background:var(--bg-screen);color:var(--text);padding:10px 14px;border-radius:16px;font-size:0.85rem;max-width:80%;text-align:left;">Hey! Is the sandbox running?</div>
@@ -666,6 +678,7 @@ function openApp(app){
           `;
       }
   } else {
+      winBodyContainer.style.padding = "0 20px 20px";
       defaultView.style.display = 'flex';
       appContent.style.display = 'none';
       winProgress.style.width='0%';
@@ -696,10 +709,9 @@ function closeApp(){
   win.classList.remove('open');
   showUndo(`Closed "${winTitle.textContent}"`);
   
+  // Wipe container completely to instantly terminate video sound playback on close 
   const appContent = document.getElementById('app-content');
-  if (appContent.innerHTML.includes('iframe')) {
-      setTimeout(() => { appContent.innerHTML = ''; }, 300);
-  }
+  setTimeout(() => { appContent.innerHTML = ''; }, 380);
 }
 winClose.addEventListener('click', closeApp);
 
